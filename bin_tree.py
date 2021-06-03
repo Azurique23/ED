@@ -161,20 +161,22 @@ class Tree():
                 else:
                     node.dad.left = nodereplace
 
-                if not(nodereplace):node.dad.degree -= 1
             else:
                 self.root = nodereplace
 
         node: Node = self.root
         if not(self.root):
             print("A árvore está vázia.")
+            return
         for node in self.travel(self.root, value): pass
 
         if node.value != value:
             print ("Nó %i não está na árvore." % (value))
+            return
 
         if node.degree == 0:
             logger.info("O nó %s é uma folha", repr(node))
+            if node.dad: node.dad.degree -= 1
             replace(node)
 
         elif node.degree == 1:
@@ -184,7 +186,6 @@ class Tree():
             node.right = nodereplace.right
             node.degree = nodereplace.degree + 1
             replace(node, nodereplace)
-            # self.update_childs_level(nodereplace)
 
         else:
             logging.info("O nó %s é de grau 2", repr(node))
@@ -201,10 +202,7 @@ class Tree():
                     nodereplace.left.dad = nodereplace.dad
                 else:
                     node.degree += 1
-                    nodereplace.level -= 1
-                
-                # self.update_childs_level(nodereplace.left)
-        
+
             if nodereplace != node.left and not(nodereplace.left):
                 nodereplace.dad.right = None
 
@@ -649,6 +647,9 @@ class Tree():
                     return f"{node.value} -> {s}", n
             return "", node
 
+        right = ""
+        left = ""
+
         if value or value == 0:
             path, node = search(node, value)
             if node.value == value:
@@ -656,9 +657,14 @@ class Tree():
             return path, None, node
 
         elif sorted:
-            return travel(node.right, format="{right}{value} -> {left}") + str(node.value) + travel(node.left, format="{right} -> {value}{left}")
+            if node.right: right = travel(node.right, format="{right}{value}, {left}")
+            if node.left :left = travel(node.left, format="{right}, {value}{left}")
+            return  right + str(node.value) + left
         else:
-            return str(node.value) + travel(node.right) + travel(node.left)
+            if node.right: right = travel(node.right)
+            if node.left:  left  = travel(node.left)
+
+            return str(node.value) + right + left
 
     @staticmethod
     def update_childs_level(node: Node) -> None:
@@ -682,11 +688,11 @@ class Tree():
 
 if __name__ == "__main__":
     tree =  Tree()
-    # tree.put(8, 4, 12, 2, 6, 1, 3, 5, 7, 10, 14, 9, 11, 13, 15, 19, 16, 20)
-    tree.put(50, 30, 100, 20, 40, 35,45, 37)
-    print(tree)
+    tree.put(16, 24, 20, 28, 18, 30, 22, 26, 17, 19, 21, 23, 25, 27, 29, 31)
+    tree.put_recursive(8, 4, 12, 2, 6, 1, 3, 5, 7, 10, 14, 9, 11, 13, 15)
+    print(tree.travel_recursive(tree.root, sorted=True))
+    # tree.pop(16)
+    # tree.pop_recursive(17)
     print(tree.indentation())
-    tree.pop_recursive(30)
     print(tree)
-    print(tree.indentation())
-    
+
