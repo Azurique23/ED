@@ -1,8 +1,7 @@
 import logging
-from math import trunc
-from os import path, walk
 import time
 import random
+from typing import NoReturn
 
 
 logger = logging.getLogger(__name__)
@@ -35,10 +34,12 @@ class Node(object):
 
 
 class Tree():
-    def __init__(self):
-        self.root = None
-        self.lenght = 0
-        self.height = 0
+    def __init__(self) -> int:
+        self.root:Node = None
+        self.lenght:int = 0
+        self.height:int = 0
+        self.biggest:int = 0
+        self.lowest: int = 0
 
     def put(self, *args:int) -> None:
        
@@ -48,6 +49,8 @@ class Tree():
             logger.info("O node com o valor %i é a raíz da árvore.", args[0])
             self.lenght += 1
             self.height = 1
+            self.biggest = self.root.value
+            self.lowest = self.root.value
             args = args[1:]
 
         for value in args:
@@ -82,6 +85,10 @@ class Tree():
             self.lenght += 1
             if node.level >= self.height:
                 self.height = node.level+1
+            if node.value > self.biggest:
+                self.biggest = value
+            if node.value < self.lowest:
+                self.lowest = value
     
     def put_recursive(self, *args:int) -> None:
         nodo: Node; dad: Node
@@ -90,6 +97,8 @@ class Tree():
             logger.info(f"O nó {self.root.value} foi adicionado como raiz da árvore.")
             self.lenght += 1
             self.height = 1
+            self.biggest = self.root.value
+            self.lowest = self.root.value
             args = args[1:]
 
         for value in args:
@@ -117,6 +126,10 @@ class Tree():
                 self.lenght += 1
                 if node.level >= self.height:
                     self.height = node.level + 1
+                if node.value > self.biggest:
+                    self.biggest = value
+                if node.value < self.lowest:
+                    self.lowest = value
                 
             else:
                 print(f"Nó {value} já existe")
@@ -152,14 +165,13 @@ class Tree():
             else:
                 self.root = nodereplace
 
-
         node: Node = self.root
         if not(self.root):
-            return "A árvore está vázia."
+            print("A árvore está vázia.")
         for node in self.travel(self.root, value): pass
 
         if node.value != value:
-            return "Nó %i não está na árvore." % (value)
+            print ("Nó %i não está na árvore." % (value))
 
         if node.degree == 0:
             logger.info("O nó %s é uma folha", repr(node))
@@ -172,66 +184,126 @@ class Tree():
             node.right = nodereplace.right
             node.degree = nodereplace.degree + 1
             replace(node, nodereplace)
-            self.update_childs_level(nodereplace)
+            # self.update_childs_level(nodereplace)
 
         else:
             logging.info("O nó %s é de grau 2", repr(node))
-            
-            if node.left:
-                nodereplace = node.left
+            nodereplace = node.left
+            while nodereplace:
+                if nodereplace.right == None:
+                    break
+                nodereplace = nodereplace.right
 
-                while nodereplace:
-                    if nodereplace.right == None:
-                        break
-                    nodereplace = nodereplace.right
+            if nodereplace.left:
+                if nodereplace.dad != node:
+                    nodereplace.dad.degree += 1
+                    nodereplace.dad.right = nodereplace.left
+                    nodereplace.left.dad = nodereplace.dad
+                else:
+                    node.degree += 1
+                    nodereplace.level -= 1
+                
+                # self.update_childs_level(nodereplace.left)
+        
+            if nodereplace != node.left and not(nodereplace.left):
+                nodereplace.dad.right = None
 
-                if nodereplace.left:
-                    if nodereplace.dad != node:
-                        nodereplace.dad.degree += 1
-                        nodereplace.dad.right = nodereplace.left
-                        nodereplace.left.dad = nodereplace.dad
-                    else:
-                        node.degree += 1
-                        nodereplace.level -= 1
-                    
-                    self.update_childs_level(nodereplace.left)
-            
-                if nodereplace != node.left and not(nodereplace.left):
-                    nodereplace.dad.right = None
-
-                replace(node, nodereplace)
-
-            else:
-                nodereplace = node.right
-
-                while nodereplace:
-                    if nodereplace.left == None:
-                        break
-                    nodereplace = nodereplace.left
-
-                if nodereplace.right:
-                    if nodereplace.dad != node:
-                        nodereplace.dad.degree += 1
-                        nodereplace.dad.left = nodereplace.right
-                        nodereplace.right.dad = nodereplace.dad
-                    else:
-                        node.degree += 1
-                        nodereplace.level -= 1
-
-                    self.update_childs_level(nodereplace.right)
-
-                if nodereplace != node.right and (not nodereplace.right):
-                    nodereplace.dad.left = None
-
-                replace(node, nodereplace)
+            replace(node, nodereplace)
 
         del node
         self.lenght -= 1
-        self.update_height()
-        return "Nó {} removido".format(value)
+        self.update_height_level_biggest_lowest()
+        print("Nó {} foi removido.".format(value))
     
     def pop_recursive(self, value: int) -> str:
-        pass
+        def travel_right(node:Node):
+            if node.right:
+                return travel_right(node.right)
+            return node
+
+        nodereplace: Node
+        node: Node = self.root
+        if not node:
+            print("A árvore está vazia.")
+            return
+        _, node, __ =self.travel_recursive(node, value)
+
+        if not node:
+            print(f"O nó {value} não existe.")
+            return
+
+        if node.degree == 0:
+            logger.info(f"O nó {value} é uma folha.")
+            if node.dad:
+                if node.dad.left == node:
+                    node.dad.left = None
+                else:
+                    node.dad.right = None
+                node.dad.degree -= 1
+            else:
+                self.root = None
+        elif node.degree == 1:
+            logger.info(f"O nó {value} é de grau 1.")
+            nodereplace = node.right if node.right else node.left
+            if node.dad:
+                nodereplace.dad = node.dad
+                if node.dad.right == node:
+                    node.dad.right = nodereplace
+                else:
+                    node.dad.left = nodereplace
+            else:
+                nodereplace.dad = None
+                self.root = nodereplace
+            nodereplace.level = node.level
+
+        else:
+            logger.info(f"O nó {value} é de grau 2.")
+            nodereplace =  travel_right(node.left)
+
+            nodereplace.level = node.level
+            if nodereplace == node.left:
+                if node.right:
+                    node.right.dad = nodereplace
+                    nodereplace.right = node.right
+                nodereplace.degree = 2 if nodereplace.left else 1
+
+                if node.dad: 
+                    if  node.dad.left == node:
+                        node.dad.left = nodereplace
+                    else:
+                        node.dad.right = nodereplace
+                    nodereplace.dad = node.dad
+                else:
+                    self.root = nodereplace
+            else:
+                if nodereplace.left:
+                    nodereplace.dad.right = nodereplace.left
+                    nodereplace.dad.right.dad = nodereplace.dad
+                else:
+                    nodereplace.dad.right = None
+                    nodereplace.dad.degree -= 1
+
+                nodereplace.degree = node.degree
+
+                node.right.dad = node.left.dad  = nodereplace
+                
+                nodereplace.right = node.right
+                nodereplace.left = node.left
+                nodereplace.dad = node.dad
+
+                if node.dad:
+                    if node.dad.right == node:
+                        node.dad.right = nodereplace
+                    else:
+                        node.dad.left = nodereplace
+                else:
+                    self.root = nodereplace
+
+            
+        del node
+        print(f"O nó {value} foi removido.")
+        self.lenght -= 1
+        self.update_height_level_biggest_lowest_recursive()
 
     def search(self, value):
         node: Node
@@ -430,33 +502,50 @@ class Tree():
             return f"O nó A:{a} não existe"
         return f"O nó A:{a} e B:{b} não existem"
 
-    def update_height(self) -> int:
+    def update_height_level_biggest_lowest(self) -> int:
         height = 0
+        lowest = self.root.value if self.root else 0
+        biggest = self.root.value if self.root else 0
+
         node: Node
-        for node in self.travel(self.root):       
+        for node in self.travel(self.root):
+            node.level = node.dad.level+1 if node.dad else 0       
             if node.level >= height:
                 height = node.level+1
+            if node.value > biggest:
+                biggest = node.value
+            if node.value < lowest:
+                lowest = node.value
 
         self.height = height
+        self.lowest = lowest
+        self.biggest = biggest
 
-        return height
-
-    def update_height_recursive(self) -> None:
-        def update_height(node:Node) -> None:
-            # logger.info(f"Passando pelo nó {node}")
+    def update_height_level_biggest_lowest_recursive(self) -> None:
+        def update_height_bigest_lowest_recursive(node:Node) -> None:
+        
             if node.right:
-                update_height(node.right)
+                node.right.level = node.level + 1
+                update_height_bigest_lowest_recursive(node.right)
             if node.left:
-                update_height(node.left)
+                node.left.level = node.level + 1
+                update_height_bigest_lowest_recursive(node.left)
 
             if node.level >= self.height:
                 self.height = node.level+1
+            if node.value > self.biggest:
+                self.biggest = node.value
         
         self.height = 0
-        if self.root:
-            update_height(self.root)
+        self.lowest = 0
+        self.biggest = 0
 
-    def __str__(self) -> str:
+        if self.root:
+            self.biggest = self.root.value
+            self.lowest = self.root.value
+            update_height_bigest_lowest_recursive(self.root)
+        
+    def indentation(self) -> str:
         output = f"ALTURA:{self.height} QUANTIDADE DE NODE: {self.lenght}"
         node: Node
         for node in self.travel(self.root):
@@ -465,62 +554,29 @@ class Tree():
 
         return output
 
-    def show(self)-> str:
-        global indent_root
-        root = self.root
-        indent_root = 0
+    def __str__(self)-> str:
+        width = self.tree_width(self.height)
+        value_width = len(str(self.biggest)) if len(str(self.biggest)) > 1 else 2
 
-        def travel(node: Node, right=True, indent = 0):
-            global indent_root
-            
-            wr = 1; wl = 1
-            if indent_root > indent:
-                indent_root = indent
+        lines = [[" "*(value_width) for __ in range(width)] for _ in range(self.height)]
+
+        def travel(node: Node, position:int, width: int):
+            position = position + width
+            width = int(abs(width)/2)
+            line = lines[node.level]
+            line[position-1] = ""+("0"+str(node.value)).rjust(value_width) if node.value < 10 else ""+str(node.value).rjust(value_width)
+            lines[node.level] = line
 
             if node.right:
-                _, wr = travel(node.right, True, indent-1)
+                travel(node.right, position, -width)
             if node.left:
-                _, wl = travel(node.left, False)
-            width = wr+wl
-            return (-wr, wl), width
+                travel(node.left, position, width)
 
-        def indenter(node: Node, indent):
-            r = l =[]
-            if node.right:
-                r = indenter(node.right, indent - 1) 
-            if node.left:
-                l =  indenter(node.left, indent + 1)
-
-            return r + [(node.value, node.level, indent)] + l
-        
-
-        rindent, lindent = travel(self.root)[0]
-        nsir = []
-        nsil = []
-        lines = [["", 0] for _ in range(self.height)]
-        indent_root = -indent_root-rindent
-
-        if root.right: nsir = indenter(self.root.right, rindent) 
-        if root.left: nsil = indenter(self.root.left, lindent)
-
-        nodes_indent = nsir+nsil
-        lines[0] = ("    "*indent_root)+ f"{root.value}"
-
-        for node in nodes_indent:
-            print(node)
-            line = lines[node[1]]
-            indent = node[2]+(indent_root-line[1])
-            line[1] = indent
-            line[0] += ("    "*indent)+ f"{node[0]}"
-            lines[node[1]] = line
-
-        print(lines[0])
-
-        for line in lines[1:]:
-            print(line[0])
-    
-    def show_tree_recursive(self) -> str:
-        pass
+        if self.root:travel(self.root, 0, int((width+1)/2))
+        for key, line in enumerate(lines):
+            lines[key] = "".join(line)
+        lines = f"ALTURA:{self.height} QUANTIDADE DE NODE: {self.lenght}\n"+"\n".join(lines)
+        return lines
     
     @staticmethod
     def travel(node: Node, value=None) -> Node:
@@ -618,11 +674,19 @@ class Tree():
         if node.right:
             Tree.update_childs_level(node.right)
 
-
+    @staticmethod
+    def tree_width(height: int):
+        if height <= 1:
+            return 1
+        return (Tree.tree_width(height-1)*2) + 1
 
 if __name__ == "__main__":
     tree =  Tree()
-    tree.put(1,2,3,4,5,6)
-    # tree.put_recursive(8, 3, 1, 6, 4, 7, 10, 14, 15)
-    tree.show()
+    # tree.put(8, 4, 12, 2, 6, 1, 3, 5, 7, 10, 14, 9, 11, 13, 15, 19, 16, 20)
+    tree.put(50, 30, 100, 20, 40, 35,45, 37)
+    print(tree)
+    print(tree.indentation())
+    tree.pop_recursive(30)
+    print(tree)
+    print(tree.indentation())
     

@@ -1,5 +1,6 @@
+from bin_tree import Node
 
-
+print(2/2)
 
 
 def in_order(node: Node):
