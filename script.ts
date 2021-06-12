@@ -9,7 +9,6 @@ ctx.canvas.width = window.innerWidth;
 ctx.canvas.height = window.innerHeight;
 ctx.font = "15px Roboto";
 
-
 function draw(node: TreeNode): void {
   let value = node.value.toString();
 
@@ -80,3 +79,16 @@ tree.push(29);
 tree.push(31);
 
 draw(tree.root as TreeNode);
+
+const main_input = document.getElementById("value") as HTMLInputElement;
+
+main_input?.addEventListener("keyup", (event) => {
+  var key = event.key;
+  if (key === "Enter" && main_input.value) {
+    let input_readonly = main_input.cloneNode() as HTMLInputElement;
+    input_readonly.setAttribute("readonly", "");
+    input_readonly.removeAttribute("id");
+    main_input.parentElement?.insertBefore(input_readonly, main_input);
+    main_input.value = "";
+  }
+});

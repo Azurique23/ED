@@ -64,3 +64,15 @@ tree.push(27);
 tree.push(29);
 tree.push(31);
 draw(tree.root);
+var main_input = document.getElementById("value");
+main_input === null || main_input === void 0 ? void 0 : main_input.addEventListener("keyup", function (event) {
+    var _a;
+    var key = event.key;
+    if (key === "Enter" && main_input.value) {
+        var input_readonly = main_input.cloneNode();
+        input_readonly.setAttribute("readonly", "");
+        input_readonly.removeAttribute("id");
+        (_a = main_input.parentElement) === null || _a === void 0 ? void 0 : _a.insertBefore(input_readonly, main_input);
+        main_input.value = "";
+    }
+});
