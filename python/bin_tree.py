@@ -33,7 +33,7 @@ class Node(object):
         return f"{self.__class__.__name__}(value={self.value}, level={self.level}, degree={self.degree}, dad.value={dad}, right.value={right}, left.value={left})"
 
 
-class Tree():
+class Tree(object):
     def __init__(self) -> int:
         self.root:Node = None
         self.lenght:int = 0

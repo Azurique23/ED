@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+      "target": "ES5",
+      "module": "ESNext",
+      "strictNullChecks": true,
+      "noImplicitAny": true,
+      "removeComments": true,
+      "preserveConstEnums": true,
+      "strictPropertyInitialization": true,
+      "sourceMap": false,
+      "outDir": "build",
+    },
+    "files": [
+      "script.ts", "tree.ts"
+    ],
+}
+    

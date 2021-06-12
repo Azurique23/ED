@@ -1,6 +1,6 @@
-from bin_tree import Node
+from .bin_tree import Node
 
-print(2/2)
+print(1_000)
 
 
 def in_order(node: Node):
