@@ -14,13 +14,18 @@
       <div>
         <h1>Árvore Binária</h1>
         <span style="float: right; font-size: 11px;">By Marcos Pacheco</span><br>
+      
         <h2>INSERIR</h2>
-        <div id="inputs-container">
-          <input type="text" value="1000" readonly />
-          <input type="text" value="1000" readonly />
-          <input type="text" value="1000" readonly />
+        <div id="inputs-container" title="Aperte ENTER para adicioniona mais uma valor.">
           <input type="number" name="value" id="value" placeholder="00000" autofocus>
         </div>
+        <input type="text" name="value" id="lote" style="margin-top:0.3rem;" title="Input Debug adiciona vários valores separados por virgula(,)." placeholder="n1,n2,n3,...">
+        <button id="push_value">Inserir Valor(es)</button>
+        <hr>
+        <h2>EXCLUIR</h2>
+        <input type="number" name="pop_input" id="pop_input" placeholder="00000">
+        <button id="pop_value">Remover Valor</button>
+        
       </div>
     </div>
 

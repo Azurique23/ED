@@ -58,6 +58,14 @@ input::-webkit-inner-spin-button {
     -webkit-appearance: none;
 }
 
+.container > div > input{
+    width: 100%;
+    padding: 0.3rem;
+    background-color: rgb(248, 248, 248);
+    border: 1.8px solid black;
+    border-radius: 3px;
+}
+
 #inputs-container{
     display: flex;
     width: 100%;
@@ -78,11 +86,58 @@ input::-webkit-inner-spin-button {
     margin: 0.2rem;
     font-weight: 500;
 }
-#inputs-container > input:not([readonly]){
+#inputs-container > input:not([readonly]), #lote{
     border: 1.8px solid rgb(41, 0, 190);
     background-color: rgb(252, 252, 252);
 }
-#inputs-container > input:not([readonly]):focus{
-    border: 1.6px solid rgb(1, 176, 245);
+#inputs-container > input:not([readonly]):focus, #lote:focus{
+    border: 1.8px solid rgb(1, 176, 245);
     box-shadow: 0 0 3px rgb(2, 121, 218);
+}
+
+
+
+button{
+    cursor: pointer;
+    width: 100%;
+    margin: 0.5em 0;
+    padding: 0.2rem 0;
+    font-size: 1rem;
+    border: 0.13em solid rgb(1, 61, 151);
+    border-radius: 0.2rem;
+    color: white;
+
+}
+
+input{
+    outline: none !important;
+}
+
+#push_value{
+    background-color: rgb(1, 68, 168);
+}
+#push_value:hover{
+    background-color: rgb(4, 87, 212);
+}
+#push_value:focus{
+    background-color: rgb(0, 59, 148);
+}
+
+#pop_input{
+    border-color: rgb(136, 0, 0);
+}
+#pop_input:focus{
+    border: 1.8px solid rgb(180, 3, 3);
+    box-shadow: 0 0 3px rgb(235, 2, 2);
+}
+
+#pop_value{
+    border-color: rgb(141, 0, 0);
+    background-color: rgb(189, 0, 0);
+}
+#pop_value:hover{
+    background-color: rgb(212, 13, 13);
+}
+#pop_value:focus{
+    background-color: rgb(136, 4, 4);
 }

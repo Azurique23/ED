@@ -23,7 +23,7 @@ class Node(object):
         right_value = self.right.value if self.right else None
         left_value = self.left.value if self.left else None
         # out = f"Valor:{str(self.value).ljust(5)} |  Nivel:{self.level}  |  Grau:{self.degree}  |  Direita:{str(right_value).ljust(5)} |  Esquerda:{str(left_value).ljust(5)}"
-        out = f"|  Valor:{self.value}  |  Nivel:{self.level}  |  Grau:{self.degree}  |  Direita:{right_value}  |  Esquerda:{left_value}  |"
+        out = f"|  Valor:{self.value}  |  Nivel:{self.level}  |  Grau:{self.degree}  |  Direita:{right_value}  |  Esquerda:{left_value}"
         return out
 
     def __repr__(self) -> str:
@@ -270,9 +270,9 @@ class Tree(object):
                         node.dad.left = nodereplace
                     else:
                         node.dad.right = nodereplace
-                    nodereplace.dad = node.dad
                 else:
                     self.root = nodereplace
+                nodereplace.dad = node.dad
             else:
                 if nodereplace.left:
                     nodereplace.dad.right = nodereplace.left
@@ -533,6 +533,8 @@ class Tree(object):
                 self.height = node.level+1
             if node.value > self.biggest:
                 self.biggest = node.value
+            if node.value < self.lowest:
+                self.lowest = node.value
         
         self.height = 0
         self.lowest = 0
@@ -690,9 +692,8 @@ if __name__ == "__main__":
     tree =  Tree()
     tree.put(16, 24, 20, 28, 18, 30, 22, 26, 17, 19, 21, 23, 25, 27, 29, 31)
     tree.put_recursive(8, 4, 12, 2, 6, 1, 3, 5, 7, 10, 14, 9, 11, 13, 15)
-    print(tree.travel_recursive(tree.root, sorted=True))
-    # tree.pop(16)
-    # tree.pop_recursive(17)
-    print(tree.indentation())
+    # print(tree.travel_recursive(tree.root, sorted=True))
+    tree.pop_recursive(16)
+    print(tree.search_recursive(17))
     print(tree)
 

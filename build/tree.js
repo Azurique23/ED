@@ -81,7 +81,10 @@ var Tree = (function () {
                 if (root.left)
                     return searchLeft(root.left, value);
             }
-            return root;
+            if (root.value !== value) {
+                return root;
+            }
+            return undefined;
         }
         if (this.root) {
             var dad = search(this.root, value);
@@ -122,6 +125,154 @@ var Tree = (function () {
             return true;
         }
     };
+    Tree.prototype.pop = function (value) {
+        var offsetX = this.offsetX;
+        var offsetY = this.offsetY;
+        function search(root, value) {
+            function searchRight(node, value) {
+                if (node.value == value) {
+                    return [node, 0];
+                }
+                if (node.value > value) {
+                    if (node.right)
+                        return searchRight(node.right, value);
+                }
+                else {
+                    if (node.left) {
+                        var res = searchRight(node.left, value);
+                        if (res) {
+                            res[1] = offsetX;
+                            node.position.x += offsetX;
+                            if (node.right)
+                                Tree.updateX(node.right, offsetX);
+                        }
+                        return res;
+                    }
+                }
+                return [undefined, 0];
+            }
+            function searchLeft(node, value) {
+                if (node.value == value) {
+                    return [node, 0];
+                }
+                if (node.value > value) {
+                    if (node.right) {
+                        var res = searchLeft(node.right, value);
+                        if (res) {
+                            res[1] = -offsetX;
+                            node.position.x -= offsetX;
+                            if (node.left)
+                                Tree.updateX(node.left, -offsetX);
+                        }
+                        return res;
+                    }
+                }
+                else {
+                    if (node.left)
+                        return searchLeft(node.left, value);
+                }
+                return [undefined, 0];
+            }
+            if (root.value == value)
+                return [root, 0];
+            if (root.value > value) {
+                if (root.right)
+                    return searchRight(root.right, value);
+            }
+            else {
+                if (root.left)
+                    return searchLeft(root.left, value);
+            }
+            return [undefined, 0];
+        }
+        function travelRight(node) {
+            if (node.right) {
+                return travelRight(node.right);
+            }
+            return node;
+        }
+        if (!this.root) {
+            return false;
+        }
+        var _a = search(this.root, value), node = _a[0], offset = _a[1];
+        if (node) {
+            if (node.degree === 0) {
+                if (node.dad) {
+                    if (node.dad.right === node) {
+                        node.dad.right = undefined;
+                    }
+                    else {
+                        node.dad.left = undefined;
+                    }
+                    node.dad.degree -= 1;
+                }
+                else {
+                    this.root = undefined;
+                }
+            }
+            else if (node.degree === 1) {
+                var nodereplace = node.right ? node.right : node.left;
+                if (node.dad) {
+                    nodereplace.dad = node.dad;
+                    if (node.dad.right == node) {
+                        if (node.right == nodereplace) {
+                            offset = node.dad.position.x - node.position.x;
+                        }
+                        node.dad.right = nodereplace;
+                    }
+                    else {
+                        if (node.left == nodereplace) {
+                            offset = node.dad.position.x - node.position.x;
+                        }
+                        node.dad.left = nodereplace;
+                    }
+                }
+                else {
+                    offset = node.position.x - nodereplace.position.x;
+                    nodereplace.dad = undefined;
+                    this.root = nodereplace;
+                }
+                Tree.updateX(nodereplace, offset);
+                nodereplace.level = node.level;
+                console.log(nodereplace);
+            }
+            else {
+                var nodereplace = travelRight(node.left);
+                nodereplace.level = node.level;
+                if (nodereplace === node.left) {
+                    offset = node.position.x - nodereplace.position.x;
+                    if (this.root.value > value) {
+                        offset = 0;
+                        Tree.updateX(node.right, offsetX);
+                    }
+                    Tree.updateX(nodereplace, offset);
+                    if (node.right) {
+                        node.right.dad = nodereplace;
+                        nodereplace.right = node.right;
+                    }
+                    nodereplace.degree = nodereplace.left ? 2 : 1;
+                    if (node.dad) {
+                        if (node.dad.right === node) {
+                            node.dad.right = nodereplace;
+                        }
+                        else {
+                            node.dad.left = nodereplace;
+                        }
+                    }
+                    else {
+                        this.root = nodereplace;
+                    }
+                    nodereplace.dad = node.dad;
+                }
+                else {
+                }
+            }
+            this.lenght -= 1;
+            this.updateTree();
+            return true;
+        }
+        return false;
+    };
     Tree.prototype.travel = function () {
         function travel(node) {
             console.log("Value: " + node.value + ", Grau: " + node.degree + ", Level: " + node.level);
@@ -134,8 +285,53 @@ var Tree = (function () {
         if (this.root)
             travel(this.root);
     };
-    Tree.updateX = function (node, offset, right) {
-        if (right === void 0) { right = true; }
+    Tree.prototype.search = function (value) {
+        function search(node, value) {
+            if (node.value == value) {
+                return node;
+            }
+            if (node.value > value) {
+                if (node.right)
+                    return search(node.right, value);
+            }
+            else {
+                if (node.left)
+                    return search(node.left, value);
+            }
+            return undefined;
+        }
+        return this.root ? search(this.root, value) : undefined;
+    };
+    Tree.prototype.updateTree = function () {
+        var offsetY = this.offsetY;
+        function travel(node, tree) {
+            node.position.y = offsetY * node.level + 27;
+            if (node.right) {
+                node.right.level = node.level + 1;
+                travel(node.right, tree);
+            }
+            if (node.left) {
+                node.left.level = node.level + 1;
+                travel(node.left, tree);
+            }
+            if (node.level >= tree.height)
+                tree.height = node.level + 1;
+            if (node.value > tree.biggest)
+                tree.biggest = node.value;
+            if (node.value < tree.lowest)
+                tree.lowest = node.value;
+        }
+        this.height = 0;
+        this.lowest = 0;
+        this.biggest = 0;
+        if (this.root) {
+            this.lowest = this.root.value;
+            this.biggest = this.root.value;
+            this.root.level = 0;
+            travel(this.root, this);
+        }
+    };
+    Tree.updateX = function (node, offset) {
         function travel(node) {
             node.position.x += offset;
             if (node.right)
