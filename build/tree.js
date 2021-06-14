@@ -265,6 +265,39 @@ var Tree = (function () {
                     nodereplace.dad = node.dad;
                 }
                 else {
+                    if (nodereplace.left) {
+                        nodereplace.dad.right = nodereplace.left;
+                        nodereplace.left.dad = nodereplace.dad;
+                    }
+                    else {
+                        nodereplace.dad.right = undefined;
+                        nodereplace.dad.degree--;
+                    }
+                    nodereplace.degree = node.degree;
+                    node.right.dad = nodereplace;
+                    node.left.dad = nodereplace;
+                    nodereplace.right = node.right;
+                    nodereplace.left = node.left;
+                    nodereplace.dad = node.dad;
+                    if (node.dad) {
+                        if (node.dad.right === node) {
+                            node.dad.right = nodereplace;
+                        }
+                        else {
+                            node.dad.left = nodereplace;
+                        }
+                    }
+                    else {
+                        this.root = nodereplace;
+                    }
+                    if (this.root.value > value && this.root != nodereplace) {
+                        Tree.updateX(nodereplace.right, offsetX);
+                    }
+                    else {
+                        offset = -offsetX;
+                        nodereplace.position.x -= offsetX;
+                        Tree.updateX(nodereplace.left, offset);
+                    }
                 }
             }
             this.lenght -= 1;
@@ -285,7 +318,8 @@ var Tree = (function () {
         if (this.root)
             travel(this.root);
     };
-    Tree.prototype.search = function (value) {
+    Tree.prototype.search = function (value, b) {
+        if (b === void 0) { b = undefined; }
         function search(node, value) {
             if (node.value == value) {
                 return node;
@@ -300,7 +334,38 @@ var Tree = (function () {
             }
             return undefined;
         }
-        return this.root ? search(this.root, value) : undefined;
+        function searchAB(node, a, b) {
+            if (node.value > a == node.value > b &&
+                !(node.value == a || node.value == b)) {
+                if (node.value > a) {
+                    if (node.right)
+                        return searchAB(node.right, a, b);
+                }
+                else {
+                    if (node.left)
+                        return searchAB(node.left, a, b);
+                }
+                return [undefined, undefined];
+            }
+            else if (node.value == a) {
+                return [node, search(node, b)];
+            }
+            else if (node.value == b) {
+                return [search(node, a), node];
+            }
+            else {
+                return [search(node, a), search(node, b)];
+            }
+        }
+        if (!this.root) {
+            return [undefined, undefined];
+        }
+        if (b) {
+            return searchAB(this.root, value, b);
+        }
+        else {
+            return [search(this.root, value), undefined];
+        }
     };
     Tree.prototype.updateTree = function () {
         var offsetY = this.offsetY;

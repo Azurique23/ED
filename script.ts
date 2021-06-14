@@ -1,8 +1,32 @@
 import { Tree, TreeNode, TypeNode } from "./tree.js";
 
-const tree = new Tree();
+declare namespace globalThis{
+  var myClose: (e: HTMLElement) => void
+}
 
+const tree = new Tree();
+var timeout: number| undefined = undefined 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+const notify_div = document.getElementById("notify") as HTMLDivElement;
+const main_input = document.getElementById("value") as HTMLInputElement;
+const btn_push = document.getElementById("push_value") as HTMLButtonElement;
+const btn_pop = document.getElementById("pop_value") as HTMLButtonElement;
+const table_node = document.getElementById("node-desc")?.cloneNode(true);
+const table_duo_node = document
+  .getElementById("duo-node-desc")
+  ?.cloneNode(true);
+document.getElementById("duo-node-desc")?.remove();
+
+// canvas.onmousemove = function(e){
+//   let rect = (this as HTMLCanvasElement).getBoundingClientRect()
+//   let scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
+
+//   let x = (e.clientX - rect.left)*scaleX
+//   let y = (e.clientY -rect.top)*scaleY
+
+//   console.log(x,y)
+// }
+
 const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
 ctx.canvas.width = window.innerWidth;
@@ -44,63 +68,38 @@ function node_draw(node: TreeNode): void {
     node.position.y + 4
   );
 }
-
 function draw(root: TypeNode) {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
   if (root) node_draw(root);
 }
 
-// tree.push(16);
-// tree.push(8);
-// tree.push(4);
-// tree.push(12);
-// tree.push(2);
-// tree.push(6);
-// tree.push(3);
-// tree.push(5);
-// tree.push(7);
-// tree.push(10);
-// tree.push(14);
-// tree.push(9);
-// tree.push(11);
-// tree.push(13);
-// tree.push(15);
-// tree.push(1);
+function notify(msg: string): void {
+  clearTimeout(timeout)
+  let text = notify_div.children[0] as HTMLParagraphElement;
+  text.innerText = msg;
+  notify_div.style.display = "block";
+  timeout = setTimeout(()=>{
+    notify_div.style.display = "none"
+  }, 7000)
+}
+globalThis.myClose = (e: HTMLElement): void => {
+  e.parentElement!.style.display = "none";
+}
 
-// tree.push(24);
-// tree.push(20);
-// tree.push(28);
-// tree.push(18);
-// tree.push(30);
-// tree.push(22);
-// tree.push(26);
-// tree.push(17);
-// tree.push(19);
-// tree.push(21);
-// tree.push(23);
-// tree.push(25);
-// tree.push(27);
-// tree.push(29);
-// tree.push(31);
-
-// draw(tree.root as TreeNode);
-
-const main_input = document.getElementById("value") as HTMLInputElement;
-const btn_push = document.getElementById("push_value") as HTMLButtonElement;
-const btn_pop = document.getElementById("pop_value") as HTMLButtonElement;
-
-main_input.addEventListener("keyup", (event) => {
-  var key = event.key;
-  if (key === "Enter" && main_input.value) {
-    let input_readonly = main_input.cloneNode() as HTMLInputElement;
-    input_readonly.setAttribute("readonly", "");
-    input_readonly.removeAttribute("id");
-    input_readonly.removeAttribute("autofocus");
-    main_input.parentElement?.insertBefore(input_readonly, main_input);
-    main_input.value = "";
-  }
-});
+if (main_input) {
+  main_input.addEventListener("keyup", (event) => {
+    var key = event.key;
+    if (key === "Enter" && main_input.value) {
+      let input_readonly = main_input.cloneNode() as HTMLInputElement;
+      input_readonly.setAttribute("readonly", "");
+      input_readonly.removeAttribute("id");
+      input_readonly.removeAttribute("autofocus");
+      main_input.parentElement?.insertBefore(input_readonly, main_input);
+      main_input.value = "";
+    }
+  });
+}
 
 btn_push.onclick = function () {
   (this as HTMLButtonElement).blur();
@@ -114,8 +113,10 @@ btn_push.onclick = function () {
       value = Number(value_);
       if (value) {
         res = tree.push(value);
+        if(!res){
+          notify("O nó "+value+" já está na árvore.")
+        }
       }
-
     });
   }
   draw(tree.root);
@@ -130,6 +131,8 @@ btn_push.onclick = function () {
       console.info("Inserido: ", res);
       if (res) {
         draw(tree.root);
+      }else{
+        notify("O nó "+value+" já está na árvore.")
       }
     }
     if (inputs[0] !== main_input) {
@@ -150,9 +153,10 @@ btn_pop.onclick = function () {
   if (value) {
     let res = tree.pop(value);
 
-    if (res) {
-      draw(tree.root);
+    if (!res) {
+      notify(`O nó ${value} não foi removido.`)
     }
+    draw(tree.root);
   }
 
   input.value = "";

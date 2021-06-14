@@ -246,17 +246,16 @@ export class Tree {
 
         nodereplace.level = node.level;
         if (nodereplace === node.left) {
-          offset = node.position.x - nodereplace.position.x
-          if(this.root.value > value){
-            offset = 0
-            Tree.updateX(node.right as TreeNode, offsetX)
+          offset = node.position.x - nodereplace.position.x;
+          if (this.root.value > value) {
+            offset = 0;
+            Tree.updateX(node.right as TreeNode, offsetX);
           }
-          Tree.updateX(nodereplace, offset)
+          Tree.updateX(nodereplace, offset);
 
           if (node.right) {
             node.right.dad = nodereplace;
             nodereplace.right = node.right;
-            
           }
           nodereplace.degree = nodereplace.left ? 2 : 1;
 
@@ -270,9 +269,41 @@ export class Tree {
             this.root = nodereplace;
           }
           nodereplace.dad = node.dad;
-          
-          
         } else {
+          if (nodereplace.left) {
+            nodereplace.dad!.right = nodereplace.left;
+            nodereplace.left!.dad = nodereplace.dad;
+          } else {
+            nodereplace.dad!.right = undefined;
+            nodereplace.dad!.degree--;
+          }
+
+          nodereplace.degree = node.degree;
+
+          node.right!.dad = nodereplace;
+          node.left!.dad = nodereplace;
+
+          nodereplace.right = node.right;
+          nodereplace.left = node.left;
+          nodereplace.dad = node.dad;
+
+          if (node.dad) {
+            if (node.dad.right === node) {
+              node.dad.right = nodereplace;
+            } else {
+              node.dad.left = nodereplace;
+            }
+          } else {
+            this.root = nodereplace;
+          }
+
+          if (this.root.value > value && this.root != nodereplace) {
+            Tree.updateX(nodereplace.right as TreeNode, offsetX);
+          } else {
+            offset = -offsetX;
+            nodereplace.position.x -= offsetX;
+            Tree.updateX(nodereplace.left as TreeNode, offset);
+          }
         }
       }
 
@@ -296,7 +327,7 @@ export class Tree {
     if (this.root) travel(this.root);
   }
 
-  search(value: number): TypeNode {
+  search(value: number, b: number | undefined = undefined): TypeNode[] {
     function search(node: TreeNode, value: number): TypeNode {
       if (node.value == value) {
         return node;
@@ -309,7 +340,35 @@ export class Tree {
       return undefined;
     }
 
-    return this.root ? search(this.root, value) : undefined;
+    function searchAB(node: TreeNode, a: number, b: number): TypeNode[] {
+      if (
+        node.value > a == node.value > b &&
+        !(node.value == a || node.value == b)
+      ) {
+        if (node.value > a) {
+          if (node.right) return searchAB(node.right, a, b);
+        } else {
+          if (node.left) return searchAB(node.left, a, b);
+        }
+        return [undefined, undefined];
+      } else if (node.value == a) {
+        return [node, search(node, b)]
+      } else if (node.value == b) {
+        return [search(node, a), node]
+      } else {
+        return [search(node, a), search(node, b)]
+      }
+    }
+
+    if (!this.root) {
+      return [undefined, undefined];
+    }
+
+    if (b) {
+      return searchAB(this.root, value, b);
+    } else {
+      return [search(this.root, value), undefined];
+    }
   }
 
   updateTree() {
@@ -343,6 +402,7 @@ export class Tree {
       travel(this.root, this);
     }
   }
+
   static updateX(node: TreeNode, offset: number): void {
     function travel(node: TreeNode): void {
       node.position.x += offset;
