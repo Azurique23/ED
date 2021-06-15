@@ -8,6 +8,11 @@
   outline: none;
 }
 
+html{
+  /* overflow-y:hidden; */
+  overflow-x:hidden;
+
+}
 /* ##### TEXTO ##### */
 h1 {
   font-size: 1.75rem;
@@ -43,6 +48,7 @@ canvas {
   flex: 1;
   padding: 1rem 1rem 1rem 1rem;
 }
+
 input {
   margin: 0;
   padding: 0;
@@ -208,11 +214,9 @@ strong {
 
 #desc {
   width: 100%;
-  /* background-color: turquoise; */
   margin-top: 1.3rem;
-  min-height: 100px;
   font-size: 0.9rem;
-  padding: 0.3rem;
+  padding: 0.2rem;
   background-color: rgb(238, 238, 238);
   border-radius: 4px;
 }
@@ -228,7 +232,7 @@ table {
 td,
 th {
   border: 1px solid rgb(190, 190, 190);
-  padding: 5px;
+  padding: 4.5px;
 }
 th[scope="row"] {
   background-color: rgb(235, 236, 243);
@@ -264,4 +268,12 @@ th {
     font-weight: 300;
     font-family: Arial, sans-serif;
     margin-top: -5px;
+}
+
+
+div#tree-desc{
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: -4px;
+  margin-top: 0.2rem;
 }

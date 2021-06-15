@@ -1,6 +1,6 @@
-export type TypeNode = TreeNode | undefined;
+type TypeNode = TreeNode | undefined;
 
-export class TreeNode {
+class TreeNode {
   value: number;
   level: number;
   degree: number;
@@ -20,7 +20,7 @@ export class TreeNode {
   }
 }
 
-export class Tree {
+class Tree {
   root: TypeNode;
   lenght: number;
   height: number;
@@ -84,15 +84,15 @@ export class Tree {
         return node;
       }
 
+      if (root.value === value) {
+        return undefined;
+      }
       if (root.value > value) {
         if (root.right) return searchRight(root.right, value);
       } else {
         if (root.left) return searchLeft(root.left, value);
       }
-      if (root.value !== value) {
-        return root;
-      }
-      return undefined;
+      return root;
     }
 
     if (this.root) {
@@ -240,7 +240,6 @@ export class Tree {
         }
         Tree.updateX(nodereplace, offset);
         nodereplace.level = node.level;
-        console.log(nodereplace);
       } else {
         let nodereplace = travelRight(node.left as TreeNode);
 
@@ -327,7 +326,10 @@ export class Tree {
     if (this.root) travel(this.root);
   }
 
-  search(value: number, b: number | undefined = undefined): TypeNode[] {
+  search(
+    value: number,
+    b: number | undefined = undefined
+  ): [TypeNode, TypeNode, TypeNode] | TypeNode {
     function search(node: TreeNode, value: number): TypeNode {
       if (node.value == value) {
         return node;
@@ -339,8 +341,11 @@ export class Tree {
       }
       return undefined;
     }
-
-    function searchAB(node: TreeNode, a: number, b: number): TypeNode[] {
+    function searchAB(
+      node: TreeNode,
+      a: number,
+      b: number
+    ): [TypeNode, TypeNode, TypeNode] {
       if (
         node.value > a == node.value > b &&
         !(node.value == a || node.value == b)
@@ -350,24 +355,26 @@ export class Tree {
         } else {
           if (node.left) return searchAB(node.left, a, b);
         }
-        return [undefined, undefined];
+        return [undefined, undefined, undefined];
       } else if (node.value == a) {
-        return [node, search(node, b)]
+        return [node, search(node, b), node];
       } else if (node.value == b) {
-        return [search(node, a), node]
+        return [search(node, a), node, node];
       } else {
-        return [search(node, a), search(node, b)]
+        return [search(node, a), search(node, b), node];
       }
     }
 
-    if (!this.root) {
-      return [undefined, undefined];
-    }
-
     if (b) {
+      if (!this.root) {
+        return [undefined, undefined, undefined];
+      }
       return searchAB(this.root, value, b);
     } else {
-      return [search(this.root, value), undefined];
+      if (!this.root) {
+        return undefined;
+      }
+      return search(this.root, value);
     }
   }
 
@@ -403,6 +410,177 @@ export class Tree {
     }
   }
 
+  draw(ctx: CanvasRenderingContext2D) {
+    function drawTree(node: TreeNode): void {
+      let value = node.value.toString();
+
+      if (node.right) {
+        ctx.beginPath();
+        ctx.lineWidth = 1.4;
+        ctx.lineTo(node.position.x, node.position.y);
+        ctx.lineTo(node.right.position.x, node.right.position.y);
+        ctx.stroke();
+        drawTree(node.right);
+      }
+
+      if (node.left) {
+        ctx.beginPath();
+        ctx.lineWidth = 1.4;
+        ctx.lineTo(node.position.x, node.position.y);
+        ctx.lineTo(node.left.position.x, node.left.position.y);
+        ctx.stroke();
+        drawTree(node.left);
+      }
+
+      Tree.drawNode(node, ctx);
+    }
+
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.strokeStyle = "black";
+
+    if (this.root) drawTree(this.root);
+  }
+
+  searchDraw(
+    start: TreeNode,
+    end: TreeNode,
+    ctx: CanvasRenderingContext2D,
+    clear: boolean = true,
+    notend: boolean = false
+  ) {
+    function normalDraw(node: TreeNode) {
+      let value = node.value.toString();
+      ctx.strokeStyle = "#000000";
+
+      if (node.right) {
+        ctx.beginPath();
+        ctx.lineWidth = 1.4;
+        ctx.lineTo(node.position.x, node.position.y);
+        ctx.lineTo(node.right.position.x, node.right.position.y);
+        ctx.stroke();
+        normalDraw(node.right);
+      }
+
+      if (node.left) {
+        ctx.beginPath();
+        ctx.lineWidth = 1.4;
+        ctx.lineTo(node.position.x, node.position.y);
+        ctx.lineTo(node.left.position.x, node.left.position.y);
+        ctx.stroke();
+        normalDraw(node.left);
+      }
+
+      Tree.drawNode(node, ctx);
+    }
+
+    function whoSide(node: TreeNode, right: boolean | undefined) {
+      if (right !== undefined) {
+        if (right) {
+          if (node.left) {
+            ctx.beginPath();
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 1.4;
+            ctx.lineTo(node.position.x, node.position.y);
+            ctx.lineTo(node.left.position.x, node.left.position.y);
+            ctx.stroke();
+            normalDraw(node.left);
+          }
+        } else {
+          if (node.right) {
+            ctx.beginPath();
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 1.4;
+            ctx.lineTo(node.position.x, node.position.y);
+            ctx.lineTo(node.right.position.x, node.right.position.y);
+            ctx.stroke();
+            normalDraw(node.right);
+          }
+        }
+      }
+    }
+
+    function orangeDraw(
+      node: TreeNode,
+      end: TreeNode,
+      right: boolean | undefined
+    ): void {
+      if (node === end) {
+        if (notend) {
+          return;
+        }
+        if (node.dad) {
+          ctx.beginPath();
+          ctx.strokeStyle = "black";
+          ctx.lineWidth = 1.4;
+          ctx.lineTo(node.position.x, node.position.y);
+          ctx.lineTo(node.dad.position.x, node.dad.position.y);
+          ctx.stroke();
+        }
+
+        if (clear) {
+          whoSide(node, right);
+        }
+        Tree.drawNode(node, ctx, "#ff7700", "white", "#ff7700");
+
+        while (node.dad) {
+          right = node.dad.right === node;
+          node = node.dad;
+          if (node.dad) {
+            ctx.beginPath();
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 1.4;
+            ctx.lineTo(node.position.x, node.position.y);
+            ctx.lineTo(node.dad.position.x, node.dad.position.y);
+            ctx.stroke();
+          }
+          whoSide(node, right);
+          Tree.drawNode(node, ctx);
+        }
+
+        return;
+      }
+
+      whoSide(node, right);
+
+      if (node.dad && node !== end) {
+        ctx.beginPath();
+        ctx.strokeStyle = "#ff7700";
+        ctx.lineWidth = 1.4;
+        ctx.lineTo(node.position.x, node.position.y);
+        ctx.lineTo(node.dad.position.x, node.dad.position.y);
+        ctx.stroke();
+        orangeDraw(node.dad, end, node.dad.value > node.value);
+      }
+
+      Tree.drawNode(node, ctx, "#ff7700", "white", "#ff7700");
+    }
+
+    if (clear) ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    ctx.strokeStyle = "black";
+    if (start.right) {
+      ctx.beginPath();
+      ctx.lineWidth = 1.4;
+      ctx.lineTo(start.position.x, start.position.y);
+      ctx.lineTo(start.right.position.x, start.right.position.y);
+      ctx.stroke();
+      normalDraw(start.right);
+    }
+    if (start.left) {
+      ctx.beginPath();
+      ctx.lineWidth = 1.4;
+      ctx.lineTo(start.position.x, start.position.y);
+      ctx.lineTo(start.left.position.x, start.left.position.y);
+      ctx.stroke();
+      normalDraw(start.left);
+    }
+
+    if (start.dad) orangeDraw(start, end, undefined);
+    else {
+      Tree.drawNode(start, ctx, "#ff7700", "white", "#ff7700");
+    }
+  }
+
   static updateX(node: TreeNode, offset: number): void {
     function travel(node: TreeNode): void {
       node.position.x += offset;
@@ -411,5 +589,31 @@ export class Tree {
     }
 
     travel(node);
+  }
+
+  static drawNode(
+    node: TreeNode,
+    ctx: CanvasRenderingContext2D,
+    bgcolor: string = "black",
+    fcolor: string = "white",
+    lcolor: string = "black"
+  ) {
+    const value = String(node.value);
+
+    ctx.strokeStyle = lcolor;
+
+    ctx.beginPath();
+    ctx.fillStyle = bgcolor;
+    ctx.arc(node.position.x, node.position.y, 25, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.fillStyle = fcolor;
+    ctx.fillText(
+      value,
+      node.position.x - ctx.measureText(value).width / 2,
+      node.position.y + 4
+    );
   }
 }

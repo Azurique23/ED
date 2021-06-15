@@ -17,34 +17,67 @@
       <canvas width="896" height="464" id="canvas"> </canvas>
       <div>
         <h1>Árvore Binária</h1>
-        <span style="float: right; font-size: 11px;">By Marcos Pacheco</span><br>
-      
+        <span style="float: right; font-size: 11px">By Marcos Pacheco</span
+        ><br />
+        <div id="tree-desc">
+          <span>NÚMERO DE NÓS: <span id="lenght">0</span></span> |
+          <span>ALTURA: <span id="height">0</span></span>
+        </div>
         <h2>INSERIR</h2>
         <!-- <div id="inputs-container" title="Aperte ENTER para adicioniona mais uma valor.">
           <input type="number" name="value" id="value" placeholder="00000" autofocus>
         </div> -->
-        <input type="text" name="lote" id="lote" style="margin-top:0.3rem;" title="Input Debug adiciona vários valores separados por virgula(,)." placeholder="n1,n2,n3,...">
+        <input
+          type="text"
+          name="lote"
+          id="lote"
+          style="margin-top: 0.3rem"
+          title="Input Debug adiciona vários valores separados por virgula(,)."
+          placeholder="n1,n2,n3,..."
+        />
         <button id="push_value">Inserir Valor(es)</button>
-        <hr>
+        <hr />
         <h2>EXCLUIR</h2>
-        <input type="number" name="pop_input" id="pop_input" placeholder="00000">
+        <input
+          type="number"
+          name="pop_input"
+          id="pop_input"
+          placeholder="00000"
+        />
         <button id="pop_value">Remover Valor</button>
-        <hr>
+        <hr />
         <h2>BUSCAR</h2>
         <div class="container-search">
-          <input type="number" placeholder="00000" name="search_input" id="search_input">
-          <button>Buscar</button>
+          <input
+            type="number"
+            placeholder="00000"
+            name="search_value"
+            id="search_value"
+          />
+          <button id="search_btn">Buscar</button>
         </div>
         <div class="container-search">
           <label for="valueA">A:</label>
-          <input type="number" class="duo" placeholder="00000" name="valueA" id="valueA">
+          <input
+            type="number"
+            class="duo"
+            placeholder="00000"
+            name="value-a"
+            id="value-a"
+          />
           <label for="valueB">B:</label>
-          <input type="number" class="duo" placeholder="00000" name="valueB" id="valueB">
-          <button class="duo">Buscar</button>
+          <input
+            type="number"
+            class="duo"
+            placeholder="00000"
+            name="value-b"
+            id="value-b"
+          />
+          <button id="search_duo_btn" class="duo">Buscar</button>
         </div>
         <div id="desc">
-          <strong>Informação sobre nó(s)</strong>
-          <table  id="node-desc">
+          <strong>Informações sobre nó(s)</strong>
+          <table id="node-desc">
             <tr>
               <th scope="col" colspan="4">*</th>
             </tr>
@@ -104,7 +137,7 @@
         </div>
       </div>
     </div>
-
-    <script type="module" src="build/script.js"></script>
+    <script src="./build/tree.js"></script>
+    <script src="./build/script.js"></script>
   </body>
 </html>

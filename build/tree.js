@@ -10,7 +10,6 @@ var TreeNode = (function () {
     }
     return TreeNode;
 }());
-export { TreeNode };
 var Tree = (function () {
     function Tree() {
         this.root = undefined;
@@ -73,6 +72,9 @@ var Tree = (function () {
                 }
                 return node;
             }
+            if (root.value === value) {
+                return undefined;
+            }
             if (root.value > value) {
                 if (root.right)
                     return searchRight(root.right, value);
@@ -81,10 +83,7 @@ var Tree = (function () {
                 if (root.left)
                     return searchLeft(root.left, value);
             }
-            if (root.value !== value) {
-                return root;
-            }
-            return undefined;
+            return root;
         }
         if (this.root) {
             var dad = search(this.root, value);
@@ -234,7 +233,6 @@ var Tree = (function () {
                 }
                 Tree.updateX(nodereplace, offset);
                 nodereplace.level = node.level;
-                console.log(nodereplace);
             }
             else {
                 var nodereplace = travelRight(node.left);
@@ -345,26 +343,29 @@ var Tree = (function () {
                     if (node.left)
                         return searchAB(node.left, a, b);
                 }
-                return [undefined, undefined];
+                return [undefined, undefined, undefined];
             }
             else if (node.value == a) {
-                return [node, search(node, b)];
+                return [node, search(node, b), node];
             }
             else if (node.value == b) {
-                return [search(node, a), node];
+                return [search(node, a), node, node];
             }
             else {
-                return [search(node, a), search(node, b)];
+                return [search(node, a), search(node, b), node];
             }
         }
-        if (!this.root) {
-            return [undefined, undefined];
-        }
         if (b) {
+            if (!this.root) {
+                return [undefined, undefined, undefined];
+            }
             return searchAB(this.root, value, b);
         }
         else {
-            return [search(this.root, value), undefined];
+            if (!this.root) {
+                return undefined;
+            }
+            return search(this.root, value);
         }
     };
     Tree.prototype.updateTree = function () {
@@ -396,6 +397,152 @@ var Tree = (function () {
             travel(this.root, this);
         }
     };
+    Tree.prototype.draw = function (ctx) {
+        function drawTree(node) {
+            var value = node.value.toString();
+            if (node.right) {
+                ctx.beginPath();
+                ctx.lineWidth = 1.4;
+                ctx.lineTo(node.position.x, node.position.y);
+                ctx.lineTo(node.right.position.x, node.right.position.y);
+                ctx.stroke();
+                drawTree(node.right);
+            }
+            if (node.left) {
+                ctx.beginPath();
+                ctx.lineWidth = 1.4;
+                ctx.lineTo(node.position.x, node.position.y);
+                ctx.lineTo(node.left.position.x, node.left.position.y);
+                ctx.stroke();
+                drawTree(node.left);
+            }
+            Tree.drawNode(node, ctx);
+        }
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.strokeStyle = "black";
+        if (this.root)
+            drawTree(this.root);
+    };
+    Tree.prototype.searchDraw = function (start, end, ctx, clear, notend) {
+        if (clear === void 0) { clear = true; }
+        if (notend === void 0) { notend = false; }
+        function normalDraw(node) {
+            var value = node.value.toString();
+            ctx.strokeStyle = "#000000";
+            if (node.right) {
+                ctx.beginPath();
+                ctx.lineWidth = 1.4;
+                ctx.lineTo(node.position.x, node.position.y);
+                ctx.lineTo(node.right.position.x, node.right.position.y);
+                ctx.stroke();
+                normalDraw(node.right);
+            }
+            if (node.left) {
+                ctx.beginPath();
+                ctx.lineWidth = 1.4;
+                ctx.lineTo(node.position.x, node.position.y);
+                ctx.lineTo(node.left.position.x, node.left.position.y);
+                ctx.stroke();
+                normalDraw(node.left);
+            }
+            Tree.drawNode(node, ctx);
+        }
+        function whoSide(node, right) {
+            if (right !== undefined) {
+                if (right) {
+                    if (node.left) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = "black";
+                        ctx.lineWidth = 1.4;
+                        ctx.lineTo(node.position.x, node.position.y);
+                        ctx.lineTo(node.left.position.x, node.left.position.y);
+                        ctx.stroke();
+                        normalDraw(node.left);
+                    }
+                }
+                else {
+                    if (node.right) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = "black";
+                        ctx.lineWidth = 1.4;
+                        ctx.lineTo(node.position.x, node.position.y);
+                        ctx.lineTo(node.right.position.x, node.right.position.y);
+                        ctx.stroke();
+                        normalDraw(node.right);
+                    }
+                }
+            }
+        }
+        function orangeDraw(node, end, right) {
+            if (node === end) {
+                if (notend) {
+                    return;
+                }
+                if (node.dad) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = "black";
+                    ctx.lineWidth = 1.4;
+                    ctx.lineTo(node.position.x, node.position.y);
+                    ctx.lineTo(node.dad.position.x, node.dad.position.y);
+                    ctx.stroke();
+                }
+                if (clear) {
+                    whoSide(node, right);
+                }
+                Tree.drawNode(node, ctx, "#ff7700", "white", "#ff7700");
+                while (node.dad) {
+                    right = node.dad.right === node;
+                    node = node.dad;
+                    if (node.dad) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = "black";
+                        ctx.lineWidth = 1.4;
+                        ctx.lineTo(node.position.x, node.position.y);
+                        ctx.lineTo(node.dad.position.x, node.dad.position.y);
+                        ctx.stroke();
+                    }
+                    whoSide(node, right);
+                    Tree.drawNode(node, ctx);
+                }
+                return;
+            }
+            whoSide(node, right);
+            if (node.dad && node !== end) {
+                ctx.beginPath();
+                ctx.strokeStyle = "#ff7700";
+                ctx.lineWidth = 1.4;
+                ctx.lineTo(node.position.x, node.position.y);
+                ctx.lineTo(node.dad.position.x, node.dad.position.y);
+                ctx.stroke();
+                orangeDraw(node.dad, end, node.dad.value > node.value);
+            }
+            Tree.drawNode(node, ctx, "#ff7700", "white", "#ff7700");
+        }
+        if (clear)
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.strokeStyle = "black";
+        if (start.right) {
+            ctx.beginPath();
+            ctx.lineWidth = 1.4;
+            ctx.lineTo(start.position.x, start.position.y);
+            ctx.lineTo(start.right.position.x, start.right.position.y);
+            ctx.stroke();
+            normalDraw(start.right);
+        }
+        if (start.left) {
+            ctx.beginPath();
+            ctx.lineWidth = 1.4;
+            ctx.lineTo(start.position.x, start.position.y);
+            ctx.lineTo(start.left.position.x, start.left.position.y);
+            ctx.stroke();
+            normalDraw(start.left);
+        }
+        if (start.dad)
+            orangeDraw(start, end, undefined);
+        else {
+            Tree.drawNode(start, ctx, "#ff7700", "white", "#ff7700");
+        }
+    };
     Tree.updateX = function (node, offset) {
         function travel(node) {
             node.position.x += offset;
@@ -406,6 +553,20 @@ var Tree = (function () {
         }
         travel(node);
     };
+    Tree.drawNode = function (node, ctx, bgcolor, fcolor, lcolor) {
+        if (bgcolor === void 0) { bgcolor = "black"; }
+        if (fcolor === void 0) { fcolor = "white"; }
+        if (lcolor === void 0) { lcolor = "black"; }
+        var value = String(node.value);
+        ctx.strokeStyle = lcolor;
+        ctx.beginPath();
+        ctx.fillStyle = bgcolor;
+        ctx.arc(node.position.x, node.position.y, 25, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.fillStyle = fcolor;
+        ctx.fillText(value, node.position.x - ctx.measureText(value).width / 2, node.position.y + 4);
+    };
     return Tree;
 }());
-export { Tree };

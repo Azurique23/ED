@@ -1,7 +1,6 @@
 {
     "compilerOptions": {
-      "target": "ES5",
-      "module": "ESNext",
+      "target": "ES3",
       "strictNullChecks": true,
       "noImplicitAny": true,
       "removeComments": true,

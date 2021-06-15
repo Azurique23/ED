@@ -1,5 +1,4 @@
 var _a, _b, _c;
-import { Tree } from "./tree.js";
 var tree = new Tree();
 var timeout = undefined;
 var canvas = document.getElementById("canvas");
@@ -7,6 +6,9 @@ var notify_div = document.getElementById("notify");
 var main_input = document.getElementById("value");
 var btn_push = document.getElementById("push_value");
 var btn_pop = document.getElementById("pop_value");
+var btn_search = document.getElementById("search_btn");
+var btn_search_duo = document.getElementById("search_duo_btn");
+var div_tbs = document.getElementById("desc");
 var table_node = (_a = document.getElementById("node-desc")) === null || _a === void 0 ? void 0 : _a.cloneNode(true);
 var table_duo_node = (_b = document
     .getElementById("duo-node-desc")) === null || _b === void 0 ? void 0 : _b.cloneNode(true);
@@ -15,37 +17,10 @@ var ctx = canvas.getContext("2d");
 ctx.canvas.width = window.innerWidth;
 ctx.canvas.height = window.innerHeight;
 ctx.font = "15px Roboto";
-function node_draw(node) {
-    var value = node.value.toString();
-    if (node.right) {
-        ctx.beginPath();
-        ctx.lineWidth = 1.4;
-        ctx.lineTo(node.position.x, node.position.y);
-        ctx.lineTo(node.right.position.x, node.right.position.y);
-        ctx.stroke();
-        node_draw(node.right);
-    }
-    if (node.left) {
-        ctx.beginPath();
-        ctx.lineWidth = 1.4;
-        ctx.lineTo(node.position.x, node.position.y);
-        ctx.lineTo(node.left.position.x, node.left.position.y);
-        ctx.stroke();
-        node_draw(node.left);
-    }
-    ctx.beginPath();
-    ctx.fillStyle = "black";
-    ctx.arc(node.position.x, node.position.y, 25, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.fillStyle = "white";
-    ctx.fillText(value, node.position.x - ctx.measureText(value).width / 2, node.position.y + 4);
-}
-function draw(root) {
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    if (root)
-        node_draw(root);
+function updateTreeDesc(tree) {
+    document.getElementById("lenght").innerText =
+        "" + tree.lenght;
+    document.getElementById("height").innerText = String(tree.height);
 }
 function notify(msg) {
     clearTimeout(timeout);
@@ -56,7 +31,7 @@ function notify(msg) {
         notify_div.style.display = "none";
     }, 7000);
 }
-globalThis.myClose = function (e) {
+var myClose = function (e) {
     e.parentElement.style.display = "none";
 };
 if (main_input) {
@@ -79,7 +54,7 @@ btn_push.onclick = function () {
     var value = lote.value;
     lote.value = "";
     if (value) {
-        var values = value.split(",");
+        var values = value.split(";");
         values.forEach(function (value_) {
             value = Number(value_);
             if (value) {
@@ -88,18 +63,20 @@ btn_push.onclick = function () {
                     notify("O nó " + value + " já está na árvore.");
                 }
             }
+            else {
+                notify("A entrada " + value_ + " \u00E9 inv\u00E1livda.");
+            }
         });
     }
-    draw(tree.root);
+    tree.draw(ctx);
     var inputs = document.getElementsByName("value");
     var res = false;
     while (inputs[0]) {
         value = Number(inputs[0].value);
         if (value) {
             res = tree.push(value);
-            console.info("Inserido: ", res);
             if (res) {
-                draw(tree.root);
+                tree.draw(ctx);
             }
             else {
                 notify("O nó " + value + " já está na árvore.");
@@ -113,6 +90,7 @@ btn_push.onclick = function () {
             break;
         }
     }
+    updateTreeDesc(tree);
 };
 btn_pop.onclick = function () {
     this.blur();
@@ -123,7 +101,101 @@ btn_pop.onclick = function () {
         if (!res) {
             notify("O n\u00F3 " + value + " n\u00E3o foi removido.");
         }
-        draw(tree.root);
+        tree.draw(ctx);
     }
+    updateTreeDesc(tree);
     input.value = "";
 };
+function descNode(node) {
+    var table = table_node === null || table_node === void 0 ? void 0 : table_node.cloneNode(true);
+    var dad = node.dad ? node.dad.value : 0;
+    var right = node.right ? node.right.value : 0;
+    var left = node.left ? node.left.value : 0;
+    var tbody = table.children[0];
+    tbody.children[1].children[1].innerHTML = String(node.value);
+    tbody.children[1].children[3].innerHTML = String(node.level);
+    tbody.children[2].children[1].innerHTML = String(node.degree);
+    tbody.children[2].children[3].innerHTML = String(dad);
+    tbody.children[3].children[1].innerHTML = String(right);
+    tbody.children[3].children[3].innerHTML = String(left);
+    div_tbs.children[1].remove();
+    div_tbs.appendChild(table);
+}
+function descNodeDuo(nodea, nodeb) {
+    var table = table_duo_node === null || table_duo_node === void 0 ? void 0 : table_duo_node.cloneNode(true);
+    var dada = nodea.dad ? nodea.dad.value : 0;
+    var righta = nodea.right ? nodea.right.value : 0;
+    var lefta = nodea.left ? nodea.left.value : 0;
+    var dadb = nodeb.dad ? nodeb.dad.value : 0;
+    var rightb = nodeb.right ? nodeb.right.value : 0;
+    var leftb = nodeb.left ? nodeb.left.value : 0;
+    var tbody = table.children[0];
+    tbody.children[1].children[1].innerHTML = String(nodea.value);
+    tbody.children[1].children[2].innerHTML = String(nodeb.value);
+    tbody.children[1].children[4].innerHTML = String(nodea.level);
+    tbody.children[1].children[5].innerHTML = String(nodeb.level);
+    tbody.children[2].children[1].innerHTML = String(nodea.degree);
+    tbody.children[2].children[2].innerHTML = String(nodeb.degree);
+    tbody.children[2].children[4].innerHTML = String(dada);
+    tbody.children[2].children[5].innerHTML = String(dadb);
+    tbody.children[3].children[1].innerHTML = String(righta);
+    tbody.children[3].children[2].innerHTML = String(rightb);
+    tbody.children[3].children[4].innerHTML = String(lefta);
+    tbody.children[3].children[5].innerHTML = String(leftb);
+    div_tbs.children[1].remove();
+    div_tbs.appendChild(table);
+}
+btn_search.onclick = function () {
+    var input = document.getElementById("search_value");
+    var value = Number(input.value);
+    if (value) {
+        var node = tree.search(value);
+        if (node) {
+            descNode(node);
+            tree.searchDraw(node, tree.root, ctx);
+        }
+        else {
+            notify("O n\u00F3 " + value + " n\u00E3o foi encontrado na \u00E1rvore.");
+        }
+    }
+    else {
+        notify("Impossivel de encontra o nó com um valor desse.");
+    }
+    this.blur();
+};
+btn_search_duo.onclick = function () {
+    var a = document.getElementById("value-a");
+    var b = document.getElementById("value-b");
+    var valuea = Number(a.value);
+    var valueb = Number(b.value);
+    if (valuea && valueb) {
+        var _a = tree.search(valuea, valueb), nodea = _a[0], nodeb = _a[1], nodec = _a[2];
+        if (nodea && nodeb && nodec) {
+            if (nodea === nodec) {
+                tree.searchDraw(nodeb, nodec, ctx);
+            }
+            else if (nodeb === nodec) {
+                tree.searchDraw(nodea, nodec, ctx);
+            }
+            else {
+                tree.searchDraw(nodea, nodec, ctx, true, true);
+                tree.searchDraw(nodeb, nodec, ctx, false);
+            }
+            descNodeDuo(nodea, nodeb);
+        }
+        else if (!nodea && nodeb) {
+            notify("O n\u00F3 A:" + valuea + " n\u00E3o foi encontrado.");
+        }
+        else if (!nodeb && nodea) {
+            notify("O n\u00F3 B:" + valueb + " n\u00E3o foi encontrado.");
+        }
+        else {
+            notify("O n\u00F3 A:" + valuea + " e B:" + valueb + " n\u00E3o foram encontrado.");
+        }
+    }
+    else {
+        notify("Entrada ou entradas inválidas.");
+    }
+    this.blur();
+};
+updateTreeDesc(tree);
