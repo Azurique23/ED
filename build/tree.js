@@ -210,19 +210,39 @@ var Tree = (function () {
                 }
             }
             else if (node.degree === 1) {
-                var nodereplace = node.right ? node.right : node.left;
+                var nodereplace = undefined;
+                if (node.right) {
+                    nodereplace = node.right;
+                    if (this.root.value < value) {
+                        if (node.dad.left == node) {
+                            offset = 0;
+                        }
+                        else
+                            offset = -offsetX;
+                    }
+                    else {
+                        offset = offsetX;
+                    }
+                }
+                else {
+                    nodereplace = node.left;
+                    if (this.root.value > value) {
+                        if (node.dad.right == node) {
+                            offset = 0;
+                        }
+                        else
+                            offset = offsetX;
+                    }
+                    else {
+                        offset = -offsetX;
+                    }
+                }
                 if (node.dad) {
                     nodereplace.dad = node.dad;
                     if (node.dad.right == node) {
-                        if (node.right == nodereplace) {
-                            offset = node.dad.position.x - node.position.x;
-                        }
                         node.dad.right = nodereplace;
                     }
                     else {
-                        if (node.left == nodereplace) {
-                            offset = node.dad.position.x - node.position.x;
-                        }
                         node.dad.left = nodereplace;
                     }
                 }

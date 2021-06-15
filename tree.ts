@@ -219,30 +219,48 @@ class Tree {
           this.root = undefined;
         }
       } else if (node.degree === 1) {
-        const nodereplace = node.right ? node.right : (node.left as TreeNode);
+        let nodereplace: TypeNode = undefined
+        
+        if(node.right){
+          nodereplace = node.right as TreeNode;
+
+          if(this.root.value < value){
+            if(node.dad!.left == node){
+              offset = 0;
+            }else offset = -offsetX
+          }else{
+            offset = offsetX
+          }
+
+        }else{
+          nodereplace = node.left as TreeNode;
+          if(this.root.value > value){
+            if(node.dad!.right == node){
+              offset = 0;
+            }else offset = offsetX
+          }else{
+            offset = -offsetX
+          }
+        }
 
         if (node.dad) {
           nodereplace.dad = node.dad;
 
           if (node.dad.right == node) {
-            if (node.right == nodereplace) {
-              offset = node.dad.position.x - node.position.x;
-            }
-
             node.dad.right = nodereplace;
+
           } else {
-            if (node.left == nodereplace) {
-              offset = node.dad.position.x - node.position.x;
-            }
             node.dad.left = nodereplace;
           }
         } else {
-          offset = node.position.x - nodereplace.position.x;
+          offset = node.position.x - nodereplace.position.x
           nodereplace.dad = undefined;
           this.root = nodereplace;
         }
+
         Tree.updateX(nodereplace, offset);
         nodereplace.level = node.level;
+
       } else {
         let nodereplace = travelRight(node.left as TreeNode);
 
