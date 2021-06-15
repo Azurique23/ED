@@ -1,3 +1,6 @@
+// @Marcos Pacheco
+// @Danilo Brandão
+
 type TypeNode = TreeNode | undefined;
 
 class TreeNode {

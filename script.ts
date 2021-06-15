@@ -1,6 +1,11 @@
+// @Marcos Pacheco
+// @Danilo Brandão
 
 const tree = new Tree();
+
 var timeout: number | undefined = undefined;
+
+// PEGANDO OS ELEMENTOS DO DOM
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const notify_div = document.getElementById("notify") as HTMLDivElement;
 const main_input = document.getElementById("value") as HTMLInputElement;
@@ -17,12 +22,13 @@ const table_duo_node = document
   ?.cloneNode(true);
 document.getElementById("duo-node-desc")?.remove();
 
+// CANVAS
 const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-
 ctx.canvas.width = window.innerWidth;
 ctx.canvas.height = window.innerHeight;
 ctx.font = "15px Roboto";
 
+//  FUNÇÕES PARA MANIPULZAÇÃO DO DOM E DA ÁRVORE BINÁRIA.
 function updateTreeDesc(tree: Tree): void {
   (document.getElementById("lenght") as HTMLSpanElement).innerText =
     "" + tree.lenght;
@@ -74,8 +80,8 @@ btn_push.onclick = function () {
         if (!res) {
           notify("O nó " + value + " já está na árvore.");
         }
-      }else{
-        notify(`A entrada ${value_} é inválivda.`)
+      } else {
+        notify(`A entrada ${value_} é inválivda.`);
       }
     });
   }
@@ -164,7 +170,7 @@ function descNodeDuo(nodea: TreeNode, nodeb: TreeNode): void {
 
   tbody.children[2].children[4].innerHTML = String(dada);
   tbody.children[2].children[5].innerHTML = String(dadb);
-  
+
   tbody.children[3].children[1].innerHTML = String(righta);
   tbody.children[3].children[2].innerHTML = String(rightb);
 
@@ -174,7 +180,6 @@ function descNodeDuo(nodea: TreeNode, nodeb: TreeNode): void {
   div_tbs.children[1].remove();
   div_tbs.appendChild(table);
 }
-
 
 btn_search.onclick = function (this: HTMLButtonElement) {
   let input = document.getElementById("search_value") as HTMLInputElement;
@@ -206,25 +211,23 @@ btn_search_duo.onclick = function (this: HTMLButtonElement) {
       TypeNode,
       TypeNode
     ];
-    if(nodea && nodeb && nodec){
-      if(nodea === nodec){
-        tree.searchDraw(nodeb, nodec, ctx)
-      }else if(nodeb === nodec){
-        tree.searchDraw(nodea, nodec, ctx)
-      }else{
-        tree.searchDraw(nodea, nodec, ctx, true, true)
-        tree.searchDraw(nodeb, nodec, ctx, false)
+    if (nodea && nodeb && nodec) {
+      if (nodea === nodec) {
+        tree.searchDraw(nodeb, nodec, ctx);
+      } else if (nodeb === nodec) {
+        tree.searchDraw(nodea, nodec, ctx);
+      } else {
+        tree.searchDraw(nodea, nodec, ctx, true, true);
+        tree.searchDraw(nodeb, nodec, ctx, false);
       }
       descNodeDuo(nodea, nodeb);
-
-    }else if(!nodea && nodeb){
+    } else if (!nodea && nodeb) {
       notify(`O nó A:${valuea} não foi encontrado.`);
-    }else if(!nodeb && nodea){
-      notify(`O nó B:${valueb} não foi encontrado.`)
-    }else{
-      notify(`O nó A:${valuea} e B:${valueb} não foram encontrado.`)
+    } else if (!nodeb && nodea) {
+      notify(`O nó B:${valueb} não foi encontrado.`);
+    } else {
+      notify(`O nó A:${valuea} e B:${valueb} não foram encontrado.`);
     }
-
   } else {
     notify("Entrada ou entradas inválidas.");
   }

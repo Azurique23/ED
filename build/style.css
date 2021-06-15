@@ -8,10 +8,9 @@
   outline: none;
 }
 
-html{
+html {
   /* overflow-y:hidden; */
-  overflow-x:hidden;
-
+  overflow-x: hidden;
 }
 /* ##### TEXTO ##### */
 h1 {
@@ -121,6 +120,7 @@ button {
 input {
   outline: none !important;
 }
+
 #push_value {
   background-color: rgb(1, 68, 168);
 }
@@ -220,6 +220,7 @@ strong {
   background-color: rgb(238, 238, 238);
   border-radius: 4px;
 }
+
 table {
   border-collapse: collapse;
   border: 2px solid rgb(200, 200, 200);
@@ -249,7 +250,7 @@ th {
 #notify {
   position: absolute;
   display: none;
-  padding: 0.70rem 4rem;
+  padding: 0.7rem 4rem;
   background-color: rgba(230, 22, 22, 0.596);
   left: 50%;
   transform: translate(-50%, 0);
@@ -257,21 +258,21 @@ th {
   border: 1px solid black;
   border-radius: 3px;
 }
-#notify > .close::after{
-    position: absolute;
-    right: 0;
-    top: 0;
-    font-size: 14px;
-    border-radius: 3px;
-    cursor: pointer;
-    content: 'x'; 
-    font-weight: 300;
-    font-family: Arial, sans-serif;
-    margin-top: -5px;
+
+#notify > .close::after {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 14px;
+  border-radius: 3px;
+  cursor: pointer;
+  content: "x";
+  font-weight: 300;
+  font-family: Arial, sans-serif;
+  margin-top: -5px;
 }
 
-
-div#tree-desc{
+div#tree-desc {
   display: block;
   font-size: 0.85rem;
   margin-bottom: -4px;
