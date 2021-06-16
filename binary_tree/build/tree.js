@@ -139,7 +139,7 @@ var Tree = (function () {
                 else {
                     if (node.left) {
                         var res = searchRight(node.left, value);
-                        if (res) {
+                        if (res[0]) {
                             res[1] = offsetX;
                             node.position.x += offsetX;
                             if (node.right)
@@ -157,7 +157,7 @@ var Tree = (function () {
                 if (node.value > value) {
                     if (node.right) {
                         var res = searchLeft(node.right, value);
-                        if (res) {
+                        if (res[0]) {
                             res[1] = -offsetX;
                             node.position.x -= offsetX;
                             if (node.left)
@@ -213,29 +213,17 @@ var Tree = (function () {
                 var nodereplace = undefined;
                 if (node.right) {
                     nodereplace = node.right;
-                    if (this.root.value < value) {
-                        if (node.dad.left == node) {
-                            offset = 0;
-                        }
-                        else
-                            offset = -offsetX;
-                    }
-                    else {
+                    if (this.root.value > value)
                         offset = offsetX;
-                    }
+                    if (this.root.value < value)
+                        offset = 0;
                 }
                 else {
                     nodereplace = node.left;
-                    if (this.root.value > value) {
-                        if (node.dad.right == node) {
-                            offset = 0;
-                        }
-                        else
-                            offset = offsetX;
-                    }
-                    else {
+                    if (this.root.value > value)
+                        offset = 0;
+                    if (this.root.value < value)
                         offset = -offsetX;
-                    }
                 }
                 if (node.dad) {
                     nodereplace.dad = node.dad;

@@ -153,7 +153,7 @@ class Tree {
         } else {
           if (node.left) {
             let res = searchRight(node.left, value);
-            if (res) {
+            if (res[0]) {
               res[1] = offsetX;
               node.position.x += offsetX;
               if (node.right) Tree.updateX(node.right, offsetX);
@@ -170,7 +170,7 @@ class Tree {
         if (node.value > value) {
           if (node.right) {
             let res = searchLeft(node.right, value);
-            if (res) {
+            if (res[0]) {
               res[1] = -offsetX;
               node.position.x -= offsetX;
               if (node.left) Tree.updateX(node.left, -offsetX);
@@ -219,28 +219,20 @@ class Tree {
           this.root = undefined;
         }
       } else if (node.degree === 1) {
-        let nodereplace: TypeNode = undefined
-        
-        if(node.right){
+        let nodereplace: TypeNode = undefined;
+
+        if (node.right) {
           nodereplace = node.right as TreeNode;
 
-          if(this.root.value < value){
-            if(node.dad!.left == node){
-              offset = 0;
-            }else offset = -offsetX
-          }else{
-            offset = offsetX
-          }
+          if (this.root.value > value) offset = offsetX;
 
-        }else{
+          if (this.root.value < value) offset = 0;
+        } else {
           nodereplace = node.left as TreeNode;
-          if(this.root.value > value){
-            if(node.dad!.right == node){
-              offset = 0;
-            }else offset = offsetX
-          }else{
-            offset = -offsetX
-          }
+
+          if (this.root.value > value) offset = 0;
+
+          if (this.root.value < value) offset = -offsetX;
         }
 
         if (node.dad) {
@@ -248,19 +240,17 @@ class Tree {
 
           if (node.dad.right == node) {
             node.dad.right = nodereplace;
-
           } else {
             node.dad.left = nodereplace;
           }
         } else {
-          offset = node.position.x - nodereplace.position.x
+          offset = node.position.x - nodereplace.position.x;
           nodereplace.dad = undefined;
           this.root = nodereplace;
         }
 
         Tree.updateX(nodereplace, offset);
         nodereplace.level = node.level;
-
       } else {
         let nodereplace = travelRight(node.left as TreeNode);
 
