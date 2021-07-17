@@ -1,13 +1,13 @@
-class No:
+class Node:
 	def __init__(self, valor):
 		self.valor = valor
 		self.next = None
 
-class Fila:
+class Queue:
 
 	def __init__(self):
-		self.first = None
-		self.last = None
+		self.first:Node = None
+		self.last:Node = None
 		self.lenght = 0
 		
 
@@ -48,13 +48,13 @@ class Fila:
 			
 			
 # Criando nós
-no1 = No("Primeiro")
-no2 = No("Segundo")
-no3 = No("Terceiro")
-no4 = No("Quarto")
+no1 = Node("Primeiro")
+no2 = Node("Segundo")
+no3 = Node("Terceiro")
+no4 = Node("Quarto")
 
 # Criando uma fila
-fila = Fila()
+fila = Queue()
 
 # Inserindo valores a fila
 fila.inserir(no1)
