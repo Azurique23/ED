@@ -196,8 +196,8 @@ class Graph():
             e = vertex.adjacents
             vertex.level = count
             while e:
-                order_visit.push(e)
                 if(e.head.visisted == False):
+                    order_visit.push(e)
                     target = visitV(e.head, count+1)
                     if(target):
                         return target

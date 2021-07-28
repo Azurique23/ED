@@ -357,6 +357,17 @@ class App(Tk, Graph):
             "Arial", int(self.raio/2), "bold"))
 
     def drawEdge(self, edge: Edge, fill="#bf5d08"):
+        def animation(ln, tx, ty, hx, hx_max, s, m,n):
+            hy = round((m*hx)+n)
+            self.canvas.coords(ln, tx,ty, hx, hy)
+            hx = hx+s
+            if(s == 1):
+                if(hx < hx_max):
+                    self.after(10, animation, ln, tx, ty, hx, hx_max, s, m,n) 
+            else:
+                if(hx > hx_max):
+                    self.after(10, animation, ln, tx, ty, hx, hx_max, s, m,n)
+
         if(edge.head == edge.tail):
             v = edge.head
             self.canvas.create_line(((v.x-10, v.y-(self.raio-3)), (v.x-15, v.y-(self.raio + 10)), (v.x, v.y-(
@@ -366,6 +377,9 @@ class App(Tk, Graph):
             a = edge.head.x-edge.tail.x
             b = edge.head.y-edge.tail.y
 
+            m = (edge.head.y-edge.tail.y)/(edge.head.x-edge.tail.x)
+            n = edge.tail.y-(m*edge.tail.x)
+            
             hip = ((a**2)+(b**2))**(1/2)
 
             offsetx = int((20*a)/hip)
@@ -376,9 +390,14 @@ class App(Tk, Graph):
             hx = edge.head.x-offsetx
             hy = edge.head.y-offsety
 
-            l = self.canvas.create_line(
-                tx, ty, hx, hy, fill=fill, arrow=LAST, width=2, arrowshape=(10, 10, 5), smooth=1)
 
+            ln = self.canvas.create_line(
+                tx, ty, tx, ty, fill=fill, arrow=LAST, width=2, arrowshape=(10, 10, 5), smooth=1)
+            if(edge.tail.x > edge.head.x):
+                self.after(10, animation, ln, tx, ty, tx, hx, -1, m,n) 
+            else:
+                self.after(10, animation, ln, tx, ty, tx, hx, 1, m,n) 
+                
     def drawGraph(self, *args, **kargs):
         if self.current_after:
             self.after_cancel(self.current_after)
@@ -426,5 +445,6 @@ class App(Tk, Graph):
 
 if __name__ == "__main__":
     app = App()
+
 
     app.mainloop()

@@ -61,7 +61,6 @@ def dividiOrdena(ls):
 			return ls
 		return [ls[1],ls[0]]
 
-
 def mergeSort(ls):
 	t = len(ls)
 	if(t!=1):
@@ -81,8 +80,6 @@ def mergeSort(ls):
 			ls.remove(0)
 
 	return ls
-
-
 
 def quickSort(ls):
 	if(ls != []):
