@@ -80,18 +80,13 @@ void insertSort(int* a, size_t size)
 
 void quickSort(int* a, size_t size)
 {
-    
-    short int hasJ = 0;
     int i, j, pivot;
     pivot = a[size-1];
 
-    j = size-1;
+    j = 0;
     for(i = 0; i < size-1;i++)
     {
-        if(!hasJ && pivot < a[i]){
-            j = i;
-            hasJ = 1;
-        }else if(a[i] < pivot && hasJ){
+        if(a[i] < pivot){
             swapElement(a, j, i, sizeof(int));
             j++;
         }
@@ -106,11 +101,72 @@ void quickSort(int* a, size_t size)
 
 } 
 
+void mergeSort(int* a, size_t size)
+{
+    int temp;
+    size_t i, j, k, mid;
+    if(size > 2){
+        mid = (size/2)+(size%2);
+        mergeSort(&a[0], mid);
+        mergeSort(&a[mid], size-mid);
+        int la[mid];
+        i = j =0;
+        k = mid;
+        for(i=0; i < mid; i++)
+        {
+            la[i] = a[i];
+        }
+        j = mid;
+        i = k = 0;
+        while (1)
+        {
+            if(k < mid && j < size){
+                if(la[k] > a[j]){
+                    a[i] = a[j];
+                    j++;
+                }else{
+                    a[i] = la[k];
+                    k++;
+                }
+                i++;
+            }else if(k < mid){
+                a[i] = la[k];
+                k++;
+                i++;
+            }else{
+                break;
+            }
+        }
+
+        // for(i=mid; i < size;i++)
+        // {
+        //     for(j; j < i; j++){
+        //         if(a[i] < a[j]){
+        //             temp = a[i];
+        //             for(x=i; x > j; x--) {a[x] = a[x-1];}
+        //             a[j] = temp;   
+        //             j++;
+        //             break;
+        //         }
+        //     }
+        // }
+
+    }else if(size > 1){
+        if(*(a) > *(a+1)){
+            swapElement(a, 0, 1, sizeof(int));
+        }
+    }
+}
+
 
 int main()
 {
+    clock_t start, end;
+    double delta;
+
     srand(time(NULL));
-    unsigned short int size = 10;
+
+    size_t size = 30;
     int a1[size], a2[size], a3[size], a4[size], a5[size], i, n;
     for(i = 0; i < size; i++){
         n= (rand()%100)+1;
@@ -120,6 +176,7 @@ int main()
         a4[i] = n;
         a5[i] = n;
     }
+
     printf("Start array: ");
     printArray(a1, size);
 
@@ -139,6 +196,20 @@ int main()
     printf("Quick sort: ");
     printArray(a4, size);
 
+    mergeSort(a5, size);
+    printf("Merge sort: ");
+    printArray(a5, size);
+
+
+    for(int i = 0; i < size; i++)
+    {
+        if(a4[i] != a5[i] || a1[i] != a2[i] || a2[i] != a3[i] || a3[i] != a4[i]){
+            printf("BS: %d, SS: %d, IS: %d, QS: %d, MS: %d ", a1[i], a2[i], a3[i], a4[i], a5[i]);
+            break;
+        }       
+    }
+
+    printf("END");
 
     return 0;
 }
