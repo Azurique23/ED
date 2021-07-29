@@ -32,7 +32,7 @@ void swapElement(void* a, int i1, int i2, size_t n){
 
 void bubbleSort(int* a, size_t size)
 {
-    int i, j, temp;
+    int i, j;
     for (i = 0; i < size; i++){
         // printArray(a,size);
         for (j = 0; j < size-i-1; j++)
@@ -90,7 +90,6 @@ void quickSort(int* a, size_t size)
             swapElement(a, j, i, sizeof(int));
             j++;
         }
-
     }
 
     a[size-1] = a[j];
@@ -103,7 +102,6 @@ void quickSort(int* a, size_t size)
 
 void mergeSort(int* a, size_t size)
 {
-    int temp;
     size_t i, j, k, mid;
     if(size > 2){
         mid = (size/2)+(size%2);
@@ -166,7 +164,7 @@ int main()
 
     srand(time(NULL));
 
-    size_t size = 30;
+    size_t size = 70;
     int a1[size], a2[size], a3[size], a4[size], a5[size], i, n;
     for(i = 0; i < size; i++){
         n= (rand()%100)+1;
@@ -197,7 +195,7 @@ int main()
     printArray(a4, size);
 
     mergeSort(a5, size);
-    printf("Merge sort: ");
+    printf("Merge sort: ");    
     printArray(a5, size);
 
 
