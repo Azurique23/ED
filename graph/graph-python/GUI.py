@@ -24,7 +24,7 @@ class App(Tk, Graph):
         screen_height = self.winfo_screenheight()
 
         self.minsize(int(screen_width*0.8), int(screen_height*0.8))
-        self.state('zoomed')
+        self.state('normal')
 
         self.style = Style()
 
@@ -55,7 +55,7 @@ class App(Tk, Graph):
             'arial', 15, 'bold'), background=self.bg_default)
         self.style.configure("Entry", font=("Arial", 13))
         self.style.configure('TButton', font=('arial', 13))
-        
+
         self.style.configure('VG.TButton', font=('arial', 10, "bold"), foreground="#8F09F6")
         self.style.configure('LG.TButton', font=('arial', 10, "bold"), foreground="#940629")
 
@@ -363,7 +363,7 @@ class App(Tk, Graph):
             hx = hx+s
             if(s == 1):
                 if(hx < hx_max):
-                    self.after(10, animation, ln, tx, ty, hx, hx_max, s, m,n) 
+                    self.after(10, animation, ln, tx, ty, hx, hx_max, s, m,n)
             else:
                 if(hx > hx_max):
                     self.after(10, animation, ln, tx, ty, hx, hx_max, s, m,n)
@@ -379,7 +379,7 @@ class App(Tk, Graph):
 
             m = (edge.head.y-edge.tail.y)/(edge.head.x-edge.tail.x)
             n = edge.tail.y-(m*edge.tail.x)
-            
+
             hip = ((a**2)+(b**2))**(1/2)
 
             offsetx = int((20*a)/hip)
@@ -394,10 +394,10 @@ class App(Tk, Graph):
             ln = self.canvas.create_line(
                 tx, ty, tx, ty, fill=fill, arrow=LAST, width=2, arrowshape=(10, 10, 5), smooth=1)
             if(edge.tail.x > edge.head.x):
-                self.after(10, animation, ln, tx, ty, tx, hx, -1, m,n) 
+                self.after(10, animation, ln, tx, ty, tx, hx, -1, m,n)
             else:
-                self.after(10, animation, ln, tx, ty, tx, hx, 1, m,n) 
-                
+                self.after(10, animation, ln, tx, ty, tx, hx, 1, m,n)
+
     def drawGraph(self, *args, **kargs):
         if self.current_after:
             self.after_cancel(self.current_after)
@@ -427,7 +427,7 @@ class App(Tk, Graph):
         self.topEdge = None
         self.order = 0
         self.size = 0
-        
+
         self.vtx_data.set(value="Dado: ")
         self.vtx_degree.set(value="Grau: ")
         self.vtx_indegree.set(value="Grau-entrada: ")

@@ -1,5 +1,7 @@
 __pycache__
 
-/**/test*
-/**/*.exe
+test*
+*.exe
+*.log
+*.zip
 .vscode
